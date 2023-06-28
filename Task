@@ -1,0 +1,94 @@
+#include <iostream>
+#include <ctime>
+
+using namespace std;
+
+struct Patient {
+    int id;
+};
+
+Patient* patients = nullptr;
+int patientCount = 0;
+
+int genId() {
+    static int id = 1;
+    return id++;
+}
+
+void createPatient() {
+    int patientId = genId();
+    Patient* newPatient = new Patient;
+    newPatient->id = patientId;
+
+    Patient* tempList = new Patient[patientCount + 1];
+    for (int i = 0; i < patientCount; i++) {
+        tempList[i] = patients[i];
+    }
+    tempList[patientCount] = *newPatient;
+
+    delete[] patients;
+
+    patients = tempList;
+    patientCount++;
+
+    cout << "Patient with ID " << patientId << " has been created.\n";
+}
+
+void reducePatientList() {
+    if (patientCount == 0) {
+        cout << "The patient list is already empty.\n";
+        return;
+    }
+
+    patientCount--;
+
+    Patient* tempList = new Patient[patientCount];
+    for (int i = 0; i < patientCount; i++) {
+        tempList[i] = patients[i];
+    }
+
+    delete[] patients;
+
+    patients = tempList;
+
+    cout << "The last patient has been removed from the list.\n";
+}
+
+void printPatientList() {
+    cout << "Patient list:\n";
+    for (int i = 0; i < patientCount; i++) {
+        cout << "Patient with ID " << patients[i].id << "\n";
+    }
+}
+
+int main() {
+    srand(time(0));
+
+    int choice;
+    while (true) {
+        cout << "Menu:\n";
+        cout << "1. Create, reduce, and expand patient list.\n";
+        cout << "2. Add or remove a patient.\n";
+        cout << "3. Print patient list.\n";
+        cout << "4. Exit.\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                createPatient();
+                break;
+            case 2:
+                reducePatientList();
+                break;
+            case 3:
+                printPatientList();
+                break;
+            case 4:
+                delete[] patients;
+                return 0;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+    }
+}
